@@ -7,17 +7,15 @@ module FactoryBoy
 
     def define_factory(klass, &block)
       if block_given?
-        @@defined_classes[klass.name] = Factory.new(klass, &block)
+        factory = Factory.new(klass, &block)
       else
-        @@defined_classes[klass.name] = Factory.new(klass)
+        factory = Factory.new(klass)
       end
+      @@defined_classes[factory.key] = factory
     end
 
     def build(klass, attributes = {})
-      raise Exception unless instance = @@defined_classes[klass.name].klass
-      attributes.each{|key, value|
-        instance.send("#{key}=", value) if instance.respond_to? "#{key}="
-      }
+      raise Exception unless instance = @@defined_classes[klass.name].build(attributes)
     instance
     end
   end

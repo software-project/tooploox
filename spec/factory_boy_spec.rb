@@ -16,6 +16,10 @@ describe FactoryBoy do
     it 'accepts block' do
       expect{FactoryBoy.define_factory(TestClass){ name("test")}}.not_to raise_error
     end
+
+    it 'defines factory form a symbol' do
+      expect{FactoryBoy.define_factory(:test_class)}.not_to raise_error
+    end
   end
 
   describe '#build' do
