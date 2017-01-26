@@ -1,25 +1,24 @@
 require "factory_boy/version"
+require "factory_boy/factory"
 
 module FactoryBoy
   class << self
-    @@defined_classes = []
+    @@defined_classes = {}
 
-    def define_factory(klass)
-      @@defined_classes << klass
+    def define_factory(klass, &block)
+      if block_given?
+        @@defined_classes[klass.name] = Factory.new(klass, &block)
+      else
+        @@defined_classes[klass.name] = Factory.new(klass)
+      end
     end
 
     def build(klass, attributes = {})
-      if @@defined_classes.any?{|c| c == klass}
-        instance = klass.new
-        attributes.each{|key, value|
-          if instance.respond_to? "#{key}="
-            instance.send "#{key}=", value
-          end
-        }
-        instance
-      else
-        raise Exception
-      end
+      raise Exception unless instance = @@defined_classes[klass.name].klass
+      attributes.each{|key, value|
+        instance.send("#{key}=", value) if instance.respond_to? "#{key}="
+      }
+    instance
     end
   end
 end
